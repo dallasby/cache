@@ -1,0 +1,43 @@
+### Create user
+POST http://localhost:8080/users
+Content-Type: application/json
+X-TenantId: tenant_tenant_2
+
+{
+  "name": "Alice",
+  "email": "alice@example.com"
+}
+
+### Get all user
+GET http://localhost:8080/users
+X-TenantId: tenant_2
+
+### Get user by ID
+GET http://localhost:8080/users/2
+X-TenantId: tenant_2
+
+### Update user
+PUT http://localhost:8080/users/2
+Content-Type: application/json
+X-TenantId: tenant_2
+
+{
+  "name": "John Updated",
+  "email": "john.updated@example.com"
+}
+
+### Delete user by ID
+DELETE http://localhost:8080/users/2
+X-TenantId: tenant_2
+
+### Get current tenant
+GET http://localhost:8080/tenant
+X-TenantId: tenant_2
+
+###  Subscribe tenant
+PUT http://localhost:8080/callback/tenant/2
+X-TenantId: 2
+
+###  Unsubscribe tenant
+DELETE http://localhost:8080/callback/tenant/tenant_2
+X-TenantId: tenant_2

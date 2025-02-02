@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: cache
+
+  cloud:
+    gateway:
+      routes:
+        - id: demo
+          uri: http://localhost:8080
+          predicates:
+            - Path=/users/**
+            - Host={segment}.users
+          filters:
+            - AddRequestHeader=X-TenantId, {segment}
+  cache:
+    type: redis
+
+  data:
+    redis:
+      host: localhost
+      port: 6380
+      timeout: 60000
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+  datasource:
+    url: jdbc:postgresql://localhost:5435/cache
+    username: postgres
+    password: postgres
+
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+
+multitenant:
+  defaultTenant: PUBLIC
+
+server:
+  port: 8080
