@@ -1,7 +1,7 @@
 ### Create user
 POST http://localhost:8080/users
 Content-Type: application/json
-X-TenantId: tenant_tenant_2
+X-TenantId: tenant_2
 
 {
   "name": "Alice",
@@ -13,7 +13,7 @@ GET http://localhost:8080/users
 X-TenantId: tenant_2
 
 ### Get user by ID
-GET http://localhost:8080/users/2
+GET http://localhost:8080/users/1
 X-TenantId: tenant_2
 
 ### Update user

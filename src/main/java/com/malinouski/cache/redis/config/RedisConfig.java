@@ -1,6 +1,8 @@
 package com.malinouski.cache.redis.config;
 
 import com.malinouski.cache.multitenancy.context.TenantContext;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,12 +17,18 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 
+@Slf4j
 @Configuration
 public class RedisConfig {
+    @Value("${spring.data.redis.port}")
+    int port;
+
+    @Value("${spring.data.redis.host}")
+    String host;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory();
+        return new LettuceConnectionFactory(host, port);
     }
 
     @Bean
@@ -42,9 +50,16 @@ public class RedisConfig {
     }
 
     private RedisCacheConfiguration cacheConfiguration() {
+        String currentTenant = TenantContext.getCurrentTenant();
+
+        if (currentTenant == null) {
+            log.info("Current tenant is null");
+            currentTenant = "default";
+        }
+
         return RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofDays(1))
-                .prefixCacheNameWith("tenant_" + TenantContext.getCurrentTenant() + ":")
+                .prefixCacheNameWith("tenant_" + currentTenant + ":")
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
     }
