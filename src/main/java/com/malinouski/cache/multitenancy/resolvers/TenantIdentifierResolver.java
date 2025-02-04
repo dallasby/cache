@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomi
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 @Component
@@ -22,7 +21,14 @@ public class TenantIdentifierResolver implements
     @Override
     public String resolveCurrentTenantIdentifier() {
         log.info("Resolving tenant identifier");
-        return Objects.requireNonNullElse(TenantContext.getCurrentTenant(), defaultTenant);
+
+        String tenantId = TenantContext.getCurrentTenant();
+        if (tenantId == null) {
+            log.info("No current tenant set. Using default tenant: {}", defaultTenant);
+            tenantId = defaultTenant;
+        }
+
+        return tenantId;
     }
 
     @Override

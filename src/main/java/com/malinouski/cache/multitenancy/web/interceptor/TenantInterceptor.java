@@ -24,9 +24,14 @@ public class TenantInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String tenantId = tenantResolver.resolveTenantId(request);
         log.info("TenantInterceptor: Received header for tenantId: {}", tenantId);
+        if (tenantId == null || tenantId.isEmpty()) {
+            tenantId = defaultTenant;
+            log.info("TenantInterceptor: TenantId header is missing. Using default tenant: {}", defaultTenant);
+        } else {
+            log.info("TenantInterceptor: Received header for tenantId: {}", tenantId);
+        }
 
         TenantContext.setCurrentTenant(tenantId);
-
         log.info("TenantInterceptor: TenantContext set to: {}", TenantContext.getCurrentTenant());
         return true;
     }

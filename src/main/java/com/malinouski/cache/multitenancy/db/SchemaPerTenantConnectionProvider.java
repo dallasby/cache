@@ -1,5 +1,6 @@
 package com.malinouski.cache.multitenancy.db;
 
+import com.malinouski.cache.multitenancy.context.TenantContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cfg.AvailableSettings;
@@ -26,7 +27,7 @@ public class SchemaPerTenantConnectionProvider implements
 
     @Override
     public Connection getAnyConnection() throws SQLException {
-        return dataSource.getConnection();
+        return this.dataSource.getConnection();
     }
 
     @Override
@@ -36,18 +37,31 @@ public class SchemaPerTenantConnectionProvider implements
 
     @Override
     public Connection getConnection(final String tenantIdentifier) throws SQLException {
-        log.info("Getting connection for tenant {}", tenantIdentifier);
+        String tenantId = tenantIdentifier != null ? tenantIdentifier : TenantContext.getCurrentTenant();
+
+        if (tenantId == null) {
+            tenantId = defaultTenant;
+            log.info("No tenantId identifier provided. Using default tenantId: {}", defaultTenant);
+        }
+
+        log.info("Getting connection for tenantId {}", tenantId);
         var connection = this.dataSource.getConnection();
-        connection.setSchema(tenantIdentifier);
-        log.info("Connection obtained for tenant {}", tenantIdentifier);
+        connection.setSchema(tenantId);
+        log.info("Connection obtained for tenantId {}", tenantId);
         return connection;
     }
 
 
     @Override
     public void releaseConnection(final String tenantIdentifier, final Connection connection) throws SQLException {
-//        connection.setSchema("PUBLIC");
-        connection.setSchema(defaultTenant);
+        String tenant = tenantIdentifier != null ? tenantIdentifier : TenantContext.getCurrentTenant();
+
+        if (tenant == null) {
+            tenant = defaultTenant;
+        }
+
+        log.info("Releasing connection for tenant {}", tenant);
+        connection.setSchema(tenant);
         connection.close();
     }
 

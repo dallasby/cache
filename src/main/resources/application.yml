@@ -12,14 +12,9 @@ spring:
             - Host={segment}.users
           filters:
             - AddRequestHeader=X-TenantId, {segment}
-  cache:
-    type: redis
 
-  data:
-    redis:
-      host: localhost
-      port: 6380
-      timeout: 60000
+  cache:
+    type: simple
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -36,7 +31,7 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
 
 multitenant:
-  defaultTenant: PUBLIC
+  defaultTenant: default
 
 server:
   port: 8080

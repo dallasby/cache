@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    @Cacheable(value = "users")
+    @Cacheable(cacheNames = "allUsersPerTenant",keyGenerator = "tenantKeyGenerator")
     public List<UserResponse> getAllUsers() {
         log.info("Fetching all users for tenant: {}", TenantContext.getCurrentTenant());
         List<UserResponse> userResponses = new ArrayList<>();
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Cacheable(value = "users", key = "#id")
+    @CacheEvict(value = "users", allEntries = true)
     public UserResponse getUserById(Long id) {
         log.info("Get user by id: {}", id);
         return userRepository.findById(id)
